@@ -4,7 +4,7 @@ import sqlite3
 class RepositorioSQLite:
     """
     Repositorio genérico: sabe guardar/leer/actualizar/borrar filas de UNA
-    tabla en SQLite. No sabe nada de Tkinter ni de formularios.
+    tabla en SQLite. 
 
     Se instancia igual que FormularioCRUD: pasándole el nombre de la tabla
     y la lista de campos. Así se reutiliza para Vehículos y Propietarios
