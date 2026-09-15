@@ -133,3 +133,6 @@ class FormularioCRUD(tk.Toplevel):
     def _al_cerrar(self):
         self.repositorio.cerrar()
         self.destroy()
+# hice cambios al llamar a la clase del formulario, ya que antes era una sola ventana para la gestión de vehiculos.
+# ahora se llaman dos ventanas, una para gestionar vehiculos y otra para gestionar propietarios.
+#
