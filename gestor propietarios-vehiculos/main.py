@@ -1,15 +1,3 @@
-# =============================================================================
-# CAMBIO DEL 22/09/2026 - SE LE PASA A CADA VENTANA SU DICCIONARIO DE REGLAS
-#
-# Antes, abrir una entidad necesitaba tres datos: el titulo, la lista de
-# campos y el repositorio. Ahora se suma un cuarto: el diccionario de
-# validaciones de esa entidad, que sale de entidades.py.
-#
-# Es la misma idea que ya usaba el programa: una sola clase generica sirve
-# para Vehiculos y para Propietarios, y lo unico que cambia son los datos que
-# se le pasan al crearla.
-# =============================================================================
-
 import tkinter as tk
 from tkinter import ttk
 from formulario import FormularioCRUD

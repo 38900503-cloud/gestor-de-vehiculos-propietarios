@@ -1,30 +1,8 @@
-# =============================================================================
-# ARCHIVO NUEVO DEL 22/09/2026 - MOTOR DE VALIDACIONES
-#
-# QUE HACE:
-#   recibe lo que el usuario escribio y el diccionario de reglas de
-#   entidades.py, y devuelve la lista de errores. Nada mas que eso.
-#
-# POR QUE ES UN ARCHIVO APARTE:
-#   para que cada archivo tenga un solo trabajo. formulario.py se ocupa de la
-#   pantalla, basedatos.py del SQL, entidades.py de los datos de cada entidad
-#   y este del control de las reglas. Como no importa tkinter ni sqlite3, se
-#   puede probar entero sin abrir una ventana ni tocar la base: eso es lo que
-#   hace el script probar-validaciones.py (40 pruebas).
-#
-# COMO SE AGREGA UNA REGLA NUEVA:
-#   se le da un nombre (por ejemplo "largo_min"), se lo agrega al diccionario
-#   del campo en entidades.py y se lo revisa en validar_campo(), abajo.
-# =============================================================================
-
 """
-Motor de validaciones.
+Motor de validaciones: recibe lo que escribio el usuario y el diccionario
+de reglas, y devuelve la lista de errores.
 
-Recibe los datos que escribio el usuario y el diccionario de reglas, y
-devuelve la lista de errores.
-
-Este archivo no sabe nada de Tkinter ni de SQLite: no importa ninguno de
-los dos. Por eso se puede probar sin abrir una sola ventana.
+No importa Tkinter ni SQLite, asi que se puede probar sin abrir ventanas.
 """
 
 
@@ -35,16 +13,10 @@ def _solo_letras(valor):
 
 def validar_campo(campo, valor, regla):
     """
-    Revisa UN campo contra SU regla.
-
-    campo: nombre del campo, se usa para armar el mensaje de error
-    valor: lo que escribio el usuario (ya sin espacios al principio ni al final)
-    regla: el diccionario de reglas de ESE campo
-
+    Revisa UN campo contra SU regla (el diccionario de reglas de ese campo).
     Devuelve None si el valor esta bien, o el texto del error si esta mal.
     """
-    # 1) campo vacio: solo importa si es obligatorio. Si no lo es, no se
-    #    revisa nada mas (no tiene sentido pedirle largo minimo a algo vacio).
+    # 1) vacio: solo importa si es obligatorio; si no, no se revisa nada mas
     if valor == "":
         if regla.get("obligatorio"):
             return f"{campo}: es obligatorio."
@@ -90,16 +62,11 @@ def validar_campo(campo, valor, regla):
 
 def validar_datos(datos, validaciones):
     """
-    Revisa TODOS los campos del formulario.
+    Revisa TODOS los campos: datos = {campo: valor escrito},
+    validaciones = {campo: reglas}.
 
-    datos:        {campo: valor escrito por el usuario}
-    validaciones: {campo: reglas}  <-- el diccionario clave/valor de entidades.py
-
-    Devuelve una lista de pares (campo, error). Lista vacia = todo esta bien.
-
-    Un campo que no figura en el diccionario de validaciones se toma como
-    obligatorio: asi se mantiene el comportamiento que tenia el programa
-    antes de existir este archivo, cuando la unica regla era "no vacio".
+    Devuelve una lista de pares (campo, error); vacia = todo esta bien.
+    Un campo que no figura en el diccionario se toma como obligatorio.
     """
     errores = []
     for campo, valor in datos.items():
