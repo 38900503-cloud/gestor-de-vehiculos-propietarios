@@ -1,5 +1,31 @@
+# =============================================================================
+# CAMBIO DEL 22/09/2026 - LA PANTALLA YA NO DECIDE QUE SE VALIDA
+#
+# QUE SE SACO:
+#   el metodo _validar_campos() tenia una sola regla escrita a mano:
+#
+#       if any(valor == "" for valor in datos.values()):
+#           messagebox.showwarning("Error de Validacion",
+#                                  "Todos los campos son obligatorios.")
+#
+#   Se quito porque mostraba siempre el mismo cartel y no decia cual de los
+#   campos estaba mal. El caso NO se perdio: ahora es la regla "obligatorio"
+#   dentro del diccionario de validaciones (ver entidades.py).
+#
+# QUE SE AGREGO:
+#   1) el parametro validaciones en __init__, con el diccionario de reglas;
+#   2) _validar_campos() ahora le pide la lista de errores a validaciones.py,
+#      los muestra TODOS juntos (uno por renglon) y deja el cursor parado en
+#      el primer campo que fallo.
+#
+# LO QUE NO CAMBIO:
+#   esta clase sigue sin saber que se valida ni como se guarda. Recibe los
+#   campos, el repositorio y las reglas, y con eso arma cualquier entidad.
+# =============================================================================
+
 import tkinter as tk
 from tkinter import ttk, messagebox
+from validaciones import validar_datos
 
 class FormularioCRUD(tk.Toplevel):
     """
@@ -10,14 +36,21 @@ class FormularioCRUD(tk.Toplevel):
     Esta clase NO sabe nada de SQLite: solo llama a
     repositorio.crear/actualizar/eliminar/listar. Así la interfaz queda
     separada de la lógica de conexión a la base de datos.
+
+    Tampoco decide QUÉ se valida: recibe el diccionario `validaciones`
+    (clave = nombre del campo, valor = sus reglas) y se lo pasa a
+    validaciones.py. Si no se le pasa ninguno, todos los campos se
+    toman como obligatorios, que era el comportamiento anterior.
     """
-    def __init__(self, parent, titulo, campos, repositorio):
+    def __init__(self, parent, titulo, campos, repositorio, validaciones=None):
         super().__init__(parent)
         self.title(titulo)
         self.geometry("700x500")
 
         self.campos = campos
         self.repositorio = repositorio
+        # diccionario clave/valor con las reglas de cada campo
+        self.validaciones = validaciones or {}
         self.entradas = {}
 
         self._crear_formulario()
@@ -72,10 +105,31 @@ class FormularioCRUD(tk.Toplevel):
         self.tabla.selection_remove(self.tabla.selection())
 
     def _validar_campos(self):
+        """
+        Revisa el formulario antes de guardar.
+
+        SE SACÓ de acá la única regla que había escrita a mano:
+
+            if any(valor == "" for valor in datos.values()):
+                messagebox.showwarning("Error de Validación",
+                                       "Todos los campos son obligatorios.")
+
+        Se quitó porque avisaba siempre lo mismo y no decía cuál campo
+        estaba mal. Ese caso no se perdió: ahora es la regla
+        "obligatorio" dentro del diccionario de validaciones.
+        """
         datos = self.obtener_datos_formulario()
-        if any(valor == "" for valor in datos.values()):
-            messagebox.showwarning("Error de Validación", "Todos los campos son obligatorios.")
+        errores = validar_datos(datos, self.validaciones)
+
+        if errores:
+            # todos los errores juntos, uno por renglón
+            texto = "\n".join(mensaje for _, mensaje in errores)
+            messagebox.showwarning("Error de Validación", texto, parent=self)
+            # el cursor queda parado en el primer campo que falló
+            primer_campo = errores[0][0]
+            self.entradas[primer_campo].focus_set()
             return None
+
         return datos
 
     def _refrescar_tabla(self):

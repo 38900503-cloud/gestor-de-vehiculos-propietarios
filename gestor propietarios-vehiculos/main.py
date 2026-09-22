@@ -1,8 +1,25 @@
+# =============================================================================
+# CAMBIO DEL 22/09/2026 - SE LE PASA A CADA VENTANA SU DICCIONARIO DE REGLAS
+#
+# Antes, abrir una entidad necesitaba tres datos: el titulo, la lista de
+# campos y el repositorio. Ahora se suma un cuarto: el diccionario de
+# validaciones de esa entidad, que sale de entidades.py.
+#
+# Es la misma idea que ya usaba el programa: una sola clase generica sirve
+# para Vehiculos y para Propietarios, y lo unico que cambia son los datos que
+# se le pasan al crearla.
+# =============================================================================
+
 import tkinter as tk
 from tkinter import ttk
 from formulario import FormularioCRUD
 from basedatos import RepositorioSQLite
-from entidades import campos_vehiculo, campos_propietario
+from entidades import (
+    campos_vehiculo,
+    campos_propietario,
+    validaciones_vehiculo,
+    validaciones_propietario,
+)
 
 class MenuPrincipal(tk.Tk):
     def __init__(self):
@@ -33,12 +50,15 @@ class MenuPrincipal(tk.Tk):
         # Reutiliza la misma clase genérica pasándole los datos de Vehículos.
         # El repositorio también es genérico: solo cambia la tabla y los campos.
         repositorio = RepositorioSQLite("vehiculos", campos_vehiculo)
-        FormularioCRUD(self, "Gestión de Vehículos", campos_vehiculo, repositorio)
+        # el cuarto dato es el diccionario de validaciones de esta entidad
+        FormularioCRUD(self, "Gestión de Vehículos", campos_vehiculo, repositorio,
+                       validaciones_vehiculo)
 
     def abrir_propietarios(self):
         # Reutiliza la misma clase genérica pasándole los datos de Propietarios
         repositorio = RepositorioSQLite("propietarios", campos_propietario)
-        FormularioCRUD(self, "Gestión de Propietarios", campos_propietario, repositorio)
+        FormularioCRUD(self, "Gestión de Propietarios", campos_propietario, repositorio,
+                       validaciones_propietario)
 
 if __name__ == "__main__":
     app = MenuPrincipal()
